@@ -3,44 +3,38 @@ import React, { useEffect, useState } from 'react';
 const LatencyDisplay = () => {
   const [latency, setLatency] = useState(null);
   const [error, setError] = useState(null);
-  
+  let connection;
+
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:55455');
+    connection = new WebSocket('ws://localhost:55455');
 
-    ws.onopen = () => {
-      console.log('Connected to WebSocket server');
+    connection.onopen = () => {
+      console.log('WebSocket connection established');
+      const startTime = new Date().getTime();
+      connection.send('Ping'); // Send a ping to measure latency
+
+      connection.onmessage = (event) => {
+        const endTime = new Date().getTime();
+        const latency = endTime - startTime; // Calculate latency
+        setLatency(latency);
+      };
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const packetTimestamp = data.data; // Assuming the message structure has a 'data' field with the timestamp
-      const currentTime = Date.now();
-      const calculatedLatency = currentTime - packetTimestamp;
-      setLatency(calculatedLatency);
-    };
-
-    ws.onerror = (event) => {
-      console.error('WebSocket error: ', event);
+    connection.onerror = (error) => {
+      console.error('WebSocket error: ', error);
       setError('WebSocket error occurred');
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
     return () => {
-      ws.close();
+      connection.close();
     };
   }, []);
 
+  if (error) return <div>{error}</div>;
+
   return (
-    <div className="latency-display">
-      {error && <div>Error: {error}</div>}
-      {latency !== null ? (
-        <div>Packet Latency: {latency} ms</div>
-      ) : (
-        <div>Waiting for packets...</div>
-      )}
+    <div>
+      <h3>Packet Latency: {latency !== null ? `${latency} ms` : 'Calculating...'}</h3>
     </div>
   );
 };

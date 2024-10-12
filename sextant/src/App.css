@@ -1,5 +1,6 @@
 .ban_sec {
   width: 100%;
+  position: relative; /* Ensure positioning context for children */
 }
 .ban_img {
   width: 100%;
@@ -7,16 +8,17 @@
 }
 .ban_img img {
   width: 100%;
+  height: auto; /* Maintain aspect ratio */
 }
 .ban_text {
   position: absolute;
   top: 50%;
   left: 6%;
-  -ms-transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
   transform: translateY(-50%);
+  text-align: left; /* Align text to the left */
+  padding: 10px; /* Added padding for better spacing */
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  border-radius: 8px; /* Rounded corners */
 }
 .ban_text strong {
   font: 800 62.22px/70px "Montserrat", sans-serif;
@@ -114,5 +116,11 @@
   }
   .ban_text {
     left: 2%;
+  }
+}
+
+@media (max-width: 768px) {
+  .ban_text {
+    left: 2%; /* Adjust position for smaller screens */
   }
 }
